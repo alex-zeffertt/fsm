@@ -18,6 +18,9 @@ class Fsm
         // loop until NULL_EVENT
         while (event != Table::EV_NULL_EVENT)
         {
+            // How this is handled is up to the derived class
+            log_event(event);
+
             auto [action, next_state] = Table::transitions[_state][event];
 
             if (action == Table::AC_IGNORE_EVENT)
@@ -29,7 +32,14 @@ class Fsm
             {
                 // Change state
                 event = handle_action(action, context);
-                _state = next_state;
+
+                if (_state != next_state)
+                {
+                    // How this is handled is up to the derived class
+                    log_state(_state, next_state);
+
+                    _state = next_state;
+                }
             }
         }
     }
@@ -41,6 +51,8 @@ class Fsm
 
   protected:
     virtual Event handle_action(Action action, void *context) = 0;
+    virtual void log_event(Event event) const {};
+    virtual void log_state(State oldstate, State newstate) const {};
 
     void set_initial(State s)
     {
