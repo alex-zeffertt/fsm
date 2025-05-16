@@ -15,7 +15,7 @@ class Fsm
 
     void inject_event(Event event, void *context = nullptr)
     {
-        // loop until no more actions or NULL_EVENT
+        // loop until NULL_EVENT
         while (event != Table::EV_NULL_EVENT)
         {
             auto [action, next_state] = Table::transitions[_state][event];

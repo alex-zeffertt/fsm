@@ -38,6 +38,7 @@ class ExampleFsmTable
         int state;
     };
 
+    // Use of lambda function enables us to concisely specify sparse array
     static constexpr auto transitions = [] {
         std::array<std::array<TransitionResult, NUM_EVENTS>, NUM_STATES> table{};
         table[ST_CIRCUIT_OPEN][EV_BUTTON_PRESS] = {AC_CLOSE_CIRCUIT_AND_START_TIMER, ST_CIRCUIT_CLOSED};
