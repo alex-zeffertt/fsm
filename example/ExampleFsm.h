@@ -4,7 +4,7 @@
 #include "ExampleFsmTable.h"
 #include <cstdio>
 
-class ExampleFsm : public ExampleFsmTable, public Fsm<ExampleFsmTable>
+class ExampleFsm : public ExampleFsmTable, public Fsm<ExampleFsm>
 {
   public:
     ExampleFsm() : closed(false)
@@ -13,7 +13,7 @@ class ExampleFsm : public ExampleFsmTable, public Fsm<ExampleFsmTable>
     }
 
   private:
-    Event handle_action(Action action, void *context) override
+    Event handle_action(Action action, void *context)
     {
         auto func = _handlers[action];
         return func ? ((this)->*func)(context) : EV_NULL_EVENT;
@@ -40,12 +40,12 @@ class ExampleFsm : public ExampleFsmTable, public Fsm<ExampleFsmTable>
 
     // loggers
 
-    void log_event(Event event) const override
+    void log_event(Event event) const
     {
         printf("Event: %s\n", event_names[event]);
     }
 
-    void log_state(State oldstate, State newstate) const override
+    void log_state(State oldstate, State newstate) const
     {
         printf("State change: %s -> %s\n", state_names[oldstate], state_names[newstate]);
     }
@@ -60,4 +60,8 @@ class ExampleFsm : public ExampleFsmTable, public Fsm<ExampleFsmTable>
         [AC_OPEN_CIRCUIT] = &ExampleFsm::open_circuit,
         [AC_EMIT_BUTTON_PRESS] = &ExampleFsm::emit_button_press,
     };
+
+    // Allow Fsm to call private functions handle_action, log_event, and log_state
+    // This is more efficient than virtual functions and avoids implicit heap allocation.
+    friend Fsm;
 };
